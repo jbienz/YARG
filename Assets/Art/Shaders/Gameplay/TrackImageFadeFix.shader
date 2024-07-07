@@ -115,7 +115,6 @@
         };
         struct SurfaceDescriptionInputs
         {
-             float3 ObjectSpacePosition;
              float4 uv0;
         };
         struct VertexDescriptionInputs
@@ -219,9 +218,26 @@
         
             // Graph Functions
             
-        void Unity_Negate_float4(float4 In, out float4 Out)
+        void Unity_SampleGradientV1_float(Gradient Gradient, float Time, out float4 Out)
         {
-            Out = -1 * In;
+            float3 color = Gradient.colors[0].rgb;
+            [unroll]
+            for (int c = 1; c < Gradient.colorsLength; c++)
+            {
+                float colorPos = saturate((Time - Gradient.colors[c - 1].w) / (Gradient.colors[c].w - Gradient.colors[c - 1].w)) * step(c, Gradient.colorsLength - 1);
+                color = lerp(color, Gradient.colors[c].rgb, lerp(colorPos, step(0.01, colorPos), Gradient.type));
+            }
+        #ifdef UNITY_COLORSPACE_GAMMA
+            color = LinearToSRGB(color);
+        #endif
+            float alpha = Gradient.alphas[0].x;
+            [unroll]
+            for (int a = 1; a < Gradient.alphasLength; a++)
+            {
+                float alphaPos = saturate((Time - Gradient.alphas[a - 1].y) / (Gradient.alphas[a].y - Gradient.alphas[a - 1].y)) * step(a, Gradient.alphasLength - 1);
+                alpha = lerp(alpha, Gradient.alphas[a].x, lerp(alphaPos, step(0.01, alphaPos), Gradient.type));
+            }
+            Out = float4(color, alpha);
         }
         
         void Unity_Multiply_float4_float4(float4 A, float4 B, out float4 Out)
@@ -272,15 +288,16 @@
             float _SampleTexture2D_835ed79cb6b845b2ac816dada67bdee0_G_5 = _SampleTexture2D_835ed79cb6b845b2ac816dada67bdee0_RGBA_0.g;
             float _SampleTexture2D_835ed79cb6b845b2ac816dada67bdee0_B_6 = _SampleTexture2D_835ed79cb6b845b2ac816dada67bdee0_RGBA_0.b;
             float _SampleTexture2D_835ed79cb6b845b2ac816dada67bdee0_A_7 = _SampleTexture2D_835ed79cb6b845b2ac816dada67bdee0_RGBA_0.a;
-            float _Split_9a63790d6549413c8eef7fb516cbfed5_R_1 = IN.ObjectSpacePosition[0];
-            float _Split_9a63790d6549413c8eef7fb516cbfed5_G_2 = IN.ObjectSpacePosition[1];
-            float _Split_9a63790d6549413c8eef7fb516cbfed5_B_3 = IN.ObjectSpacePosition[2];
-            float _Split_9a63790d6549413c8eef7fb516cbfed5_A_4 = 0;
-            float4 _Swizzle_ee8d03078d874d8ea0ee61911396b816_Out_1 = _Split_9a63790d6549413c8eef7fb516cbfed5_G_2.xxxx;
-            float4 _Negate_c48adec6bc8a44e7bcc7ce36596d38fb_Out_1;
-            Unity_Negate_float4(_Swizzle_ee8d03078d874d8ea0ee61911396b816_Out_1, _Negate_c48adec6bc8a44e7bcc7ce36596d38fb_Out_1);
+            Gradient _Gradient_356a591976c345afb2d7e0012534a4ca_Out_0 = NewGradient(0, 2, 2, float4(1, 1, 1, 0.4843214),float4(0, 0, 0, 0.5686275),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0), float2(1, 0),float2(1, 1),float2(0, 0),float2(0, 0),float2(0, 0),float2(0, 0),float2(0, 0),float2(0, 0));
+            float4 _UV_e4209ec02ae046e49db5b0d6c81ca682_Out_0 = IN.uv0;
+            float _Split_9a63790d6549413c8eef7fb516cbfed5_R_1 = _UV_e4209ec02ae046e49db5b0d6c81ca682_Out_0[0];
+            float _Split_9a63790d6549413c8eef7fb516cbfed5_G_2 = _UV_e4209ec02ae046e49db5b0d6c81ca682_Out_0[1];
+            float _Split_9a63790d6549413c8eef7fb516cbfed5_B_3 = _UV_e4209ec02ae046e49db5b0d6c81ca682_Out_0[2];
+            float _Split_9a63790d6549413c8eef7fb516cbfed5_A_4 = _UV_e4209ec02ae046e49db5b0d6c81ca682_Out_0[3];
+            float4 _SampleGradient_5a09f3ded78e454b8727149a1dd493f7_Out_2;
+            Unity_SampleGradientV1_float(_Gradient_356a591976c345afb2d7e0012534a4ca_Out_0, _Split_9a63790d6549413c8eef7fb516cbfed5_G_2, _SampleGradient_5a09f3ded78e454b8727149a1dd493f7_Out_2);
             float4 _Multiply_e02b6ea501c24ce09d9fa13484931aba_Out_2;
-            Unity_Multiply_float4_float4((_SampleTexture2D_835ed79cb6b845b2ac816dada67bdee0_A_7.xxxx), _Negate_c48adec6bc8a44e7bcc7ce36596d38fb_Out_1, _Multiply_e02b6ea501c24ce09d9fa13484931aba_Out_2);
+            Unity_Multiply_float4_float4((_SampleTexture2D_835ed79cb6b845b2ac816dada67bdee0_A_7.xxxx), _SampleGradient_5a09f3ded78e454b8727149a1dd493f7_Out_2, _Multiply_e02b6ea501c24ce09d9fa13484931aba_Out_2);
             surface.BaseColor = (_SampleTexture2D_835ed79cb6b845b2ac816dada67bdee0_RGBA_0.xyz);
             surface.Alpha = (_Multiply_e02b6ea501c24ce09d9fa13484931aba_Out_2).x;
             return surface;
@@ -311,7 +328,6 @@
         
         
         
-            output.ObjectSpacePosition =                        TransformWorldToObject(input.positionWS);
             output.uv0 =                                        input.texCoord0;
         #if defined(SHADER_STAGE_FRAGMENT) && defined(VARYINGS_NEED_CULLFACE)
         #define BUILD_SURFACE_DESCRIPTION_INPUTS_OUTPUT_FACESIGN                output.FaceSign =                                   IS_FRONT_VFACE(input.cullFace, true, false);
@@ -428,7 +444,6 @@
         };
         struct SurfaceDescriptionInputs
         {
-             float3 ObjectSpacePosition;
              float4 uv0;
         };
         struct VertexDescriptionInputs
@@ -532,9 +547,26 @@
         
             // Graph Functions
             
-        void Unity_Negate_float4(float4 In, out float4 Out)
+        void Unity_SampleGradientV1_float(Gradient Gradient, float Time, out float4 Out)
         {
-            Out = -1 * In;
+            float3 color = Gradient.colors[0].rgb;
+            [unroll]
+            for (int c = 1; c < Gradient.colorsLength; c++)
+            {
+                float colorPos = saturate((Time - Gradient.colors[c - 1].w) / (Gradient.colors[c].w - Gradient.colors[c - 1].w)) * step(c, Gradient.colorsLength - 1);
+                color = lerp(color, Gradient.colors[c].rgb, lerp(colorPos, step(0.01, colorPos), Gradient.type));
+            }
+        #ifdef UNITY_COLORSPACE_GAMMA
+            color = LinearToSRGB(color);
+        #endif
+            float alpha = Gradient.alphas[0].x;
+            [unroll]
+            for (int a = 1; a < Gradient.alphasLength; a++)
+            {
+                float alphaPos = saturate((Time - Gradient.alphas[a - 1].y) / (Gradient.alphas[a].y - Gradient.alphas[a - 1].y)) * step(a, Gradient.alphasLength - 1);
+                alpha = lerp(alpha, Gradient.alphas[a].x, lerp(alphaPos, step(0.01, alphaPos), Gradient.type));
+            }
+            Out = float4(color, alpha);
         }
         
         void Unity_Multiply_float4_float4(float4 A, float4 B, out float4 Out)
@@ -585,15 +617,16 @@
             float _SampleTexture2D_835ed79cb6b845b2ac816dada67bdee0_G_5 = _SampleTexture2D_835ed79cb6b845b2ac816dada67bdee0_RGBA_0.g;
             float _SampleTexture2D_835ed79cb6b845b2ac816dada67bdee0_B_6 = _SampleTexture2D_835ed79cb6b845b2ac816dada67bdee0_RGBA_0.b;
             float _SampleTexture2D_835ed79cb6b845b2ac816dada67bdee0_A_7 = _SampleTexture2D_835ed79cb6b845b2ac816dada67bdee0_RGBA_0.a;
-            float _Split_9a63790d6549413c8eef7fb516cbfed5_R_1 = IN.ObjectSpacePosition[0];
-            float _Split_9a63790d6549413c8eef7fb516cbfed5_G_2 = IN.ObjectSpacePosition[1];
-            float _Split_9a63790d6549413c8eef7fb516cbfed5_B_3 = IN.ObjectSpacePosition[2];
-            float _Split_9a63790d6549413c8eef7fb516cbfed5_A_4 = 0;
-            float4 _Swizzle_ee8d03078d874d8ea0ee61911396b816_Out_1 = _Split_9a63790d6549413c8eef7fb516cbfed5_G_2.xxxx;
-            float4 _Negate_c48adec6bc8a44e7bcc7ce36596d38fb_Out_1;
-            Unity_Negate_float4(_Swizzle_ee8d03078d874d8ea0ee61911396b816_Out_1, _Negate_c48adec6bc8a44e7bcc7ce36596d38fb_Out_1);
+            Gradient _Gradient_356a591976c345afb2d7e0012534a4ca_Out_0 = NewGradient(0, 2, 2, float4(1, 1, 1, 0.4843214),float4(0, 0, 0, 0.5686275),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0), float2(1, 0),float2(1, 1),float2(0, 0),float2(0, 0),float2(0, 0),float2(0, 0),float2(0, 0),float2(0, 0));
+            float4 _UV_e4209ec02ae046e49db5b0d6c81ca682_Out_0 = IN.uv0;
+            float _Split_9a63790d6549413c8eef7fb516cbfed5_R_1 = _UV_e4209ec02ae046e49db5b0d6c81ca682_Out_0[0];
+            float _Split_9a63790d6549413c8eef7fb516cbfed5_G_2 = _UV_e4209ec02ae046e49db5b0d6c81ca682_Out_0[1];
+            float _Split_9a63790d6549413c8eef7fb516cbfed5_B_3 = _UV_e4209ec02ae046e49db5b0d6c81ca682_Out_0[2];
+            float _Split_9a63790d6549413c8eef7fb516cbfed5_A_4 = _UV_e4209ec02ae046e49db5b0d6c81ca682_Out_0[3];
+            float4 _SampleGradient_5a09f3ded78e454b8727149a1dd493f7_Out_2;
+            Unity_SampleGradientV1_float(_Gradient_356a591976c345afb2d7e0012534a4ca_Out_0, _Split_9a63790d6549413c8eef7fb516cbfed5_G_2, _SampleGradient_5a09f3ded78e454b8727149a1dd493f7_Out_2);
             float4 _Multiply_e02b6ea501c24ce09d9fa13484931aba_Out_2;
-            Unity_Multiply_float4_float4((_SampleTexture2D_835ed79cb6b845b2ac816dada67bdee0_A_7.xxxx), _Negate_c48adec6bc8a44e7bcc7ce36596d38fb_Out_1, _Multiply_e02b6ea501c24ce09d9fa13484931aba_Out_2);
+            Unity_Multiply_float4_float4((_SampleTexture2D_835ed79cb6b845b2ac816dada67bdee0_A_7.xxxx), _SampleGradient_5a09f3ded78e454b8727149a1dd493f7_Out_2, _Multiply_e02b6ea501c24ce09d9fa13484931aba_Out_2);
             surface.BaseColor = (_SampleTexture2D_835ed79cb6b845b2ac816dada67bdee0_RGBA_0.xyz);
             surface.Alpha = (_Multiply_e02b6ea501c24ce09d9fa13484931aba_Out_2).x;
             return surface;
@@ -624,7 +657,6 @@
         
         
         
-            output.ObjectSpacePosition =                        TransformWorldToObject(input.positionWS);
             output.uv0 =                                        input.texCoord0;
         #if defined(SHADER_STAGE_FRAGMENT) && defined(VARYINGS_NEED_CULLFACE)
         #define BUILD_SURFACE_DESCRIPTION_INPUTS_OUTPUT_FACESIGN                output.FaceSign =                                   IS_FRONT_VFACE(input.cullFace, true, false);
