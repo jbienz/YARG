@@ -103,6 +103,7 @@ namespace YARG.Settings
                 nameof(Settings.LowQuality),
                 nameof(Settings.DisableBloom),
                 nameof(Settings.StarPowerHighwayFx),
+                nameof(Settings.TrackFadeMode),
 
                 new HeaderMetadata("Other"),
                 nameof(Settings.ShowHitWindow),

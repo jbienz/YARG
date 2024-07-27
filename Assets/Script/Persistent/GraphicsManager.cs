@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using YARG.Core.Logging;
@@ -10,6 +10,12 @@ namespace YARG
         On,
         Reduced,
         Off
+    }
+
+    public enum TrackFadeMode
+    {
+        Depth,
+        Screen
     }
 
     public class GraphicsManager : MonoSingleton<GraphicsManager>

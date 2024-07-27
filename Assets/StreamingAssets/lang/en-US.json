@@ -94,6 +94,10 @@
             "Vocals": "Vocals",
             "Harmony": "Harmony",
             "Band": "Band"
+        },
+        "TrackFadeMode": {
+            "Depth": "Depth",
+            "Screen": "Screen Space"
         }
     },
     "Menu": {
@@ -574,6 +578,14 @@
                     "Off": "Off",
                     "On": "On",
                     "Reduced": "Reduced"
+                }
+            },
+            "TrackFadeMode": {
+                "Name": "Track Fade Mode",
+                "Description": "Controls how the track fades into the distance. Depth is the most accurate, but Screen Space can boost performance on slower machines.",
+                "Dropdown": {
+                    "Depth": "Depth",
+                    "Screen": "Screen Space"
                 }
             },
             "UseChipmunkSpeed": {

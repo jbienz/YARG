@@ -1,14 +1,16 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using YARG.Core.Engine;
 using YARG.Core.Game;
 using YARG.Gameplay.Player;
+using YARG.Settings;
 
 namespace YARG.Gameplay.HUD
 {
     public class TrackView : MonoBehaviour
     {
         private static readonly int _curveFactor = Shader.PropertyToID("_CurveFactor");
+        private static readonly int _fadeLength = Shader.PropertyToID("_FadeLength");
 
         [field: SerializeField]
         public RawImage TrackImage { get; private set; }
@@ -31,15 +33,35 @@ namespace YARG.Gameplay.HUD
             _aspectRatioFitter.aspectRatio = (float) Screen.width / Screen.height;
         }
 
-        public void Initialize(RenderTexture rt, CameraPreset cameraPreset, TrackPlayer trackPlayer)
+        public void Initialize(RenderTexture renderTexture, RenderTexture depthTexture, CameraPreset cameraPreset, TrackPlayer trackPlayer)
         {
-            TrackImage.texture = rt;
+            // Store the render texture as the RawImage main texture
+            TrackImage.texture = renderTexture;
 
-            // Clone the material since RawImages don't use instanced materials
+            // Clone the shader material since RawImages don't use instanced materials
             var newMaterial = new Material(TrackImage.material);
+
+            // Configure the cloned material
             newMaterial.SetFloat(_curveFactor, cameraPreset.CurveFactor);
+            newMaterial.SetFloat(_fadeLength, cameraPreset.FadeLength);
+
+            // Only configure additional depth settings if using depth mode
+            if (SettingsManager.Settings.TrackFadeMode.Value == TrackFadeMode.Depth)
+            {
+                // TODO: Set shader to Depth mode
+
+                // Set the depth texture on the shader
+                newMaterial.SetTexture("_DepthTex", depthTexture);
+            }
+            else
+            {
+                // TODO: Set shader to Screen mode
+            }
+
+            // Set the cloned material onto the RawImage
             TrackImage.material = newMaterial;
 
+            // Save the player reference
             _trackPlayer = trackPlayer;
         }
 

@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using YARG.Gameplay.Player;
 using YARG.Helpers.Extensions;
 using YARG.Player;
+using YARG.Settings;
 
 namespace YARG.Gameplay.HUD
 {
@@ -29,17 +30,38 @@ namespace YARG.Gameplay.HUD
             var trackView = Instantiate(_trackViewPrefab, transform).GetComponent<TrackView>();
 
             // Set up render texture
-            var descriptor = new RenderTextureDescriptor(
+            var renderDescriptor = new RenderTextureDescriptor(
                 Screen.width, Screen.height,
                 RenderTextureFormat.ARGBHalf);
-            descriptor.mipCount = 0;
-            var renderTexture = new RenderTexture(descriptor);
+            renderDescriptor.mipCount = 0;
+            var renderTexture = new RenderTexture(renderDescriptor);
 
             // Make the camera render on to the texture instead of the screen
             trackPlayer.TrackCamera.targetTexture = renderTexture;
 
+            // Create a placeholder for the depth texture
+            RenderTexture depthTexture = null;
+
+            // Enable depth rendering only if using depth mode for track fade length
+            if (SettingsManager.Settings.TrackFadeMode.Value == TrackFadeMode.Depth)
+            {
+                // Set up depth texture
+                var depthDescriptor = new RenderTextureDescriptor(
+                    Screen.width, Screen.height,
+                    RenderTextureFormat.Depth,
+                    24);
+                renderDescriptor.mipCount = 0;
+                depthTexture = new RenderTexture(renderDescriptor);
+
+                // Enable depth rendering on camera
+                trackPlayer.TrackCamera.depthTextureMode = DepthTextureMode.Depth;
+
+                // Tell camera where to store depth map
+                trackPlayer.TrackCamera.SetTargetBuffers(renderTexture.colorBuffer, depthTexture.depthBuffer);
+            }
+
             // Setup track view to show the correct track
-            trackView.Initialize(renderTexture, player.CameraPreset, trackPlayer);
+            trackView.Initialize(renderTexture, depthTexture, player.CameraPreset, trackPlayer);
 
             _trackViews.Add(trackView);
             UpdateAllSizing();
