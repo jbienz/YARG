@@ -36,9 +36,6 @@ namespace YARG.Gameplay.HUD
             renderDescriptor.mipCount = 0;
             var renderTexture = new RenderTexture(renderDescriptor);
 
-            // Make the camera render on to the texture instead of the screen
-            trackPlayer.TrackCamera.targetTexture = renderTexture;
-
             // Create a placeholder for the depth texture
             RenderTexture depthTexture = null;
 
@@ -51,13 +48,18 @@ namespace YARG.Gameplay.HUD
                     RenderTextureFormat.Depth,
                     24);
                 renderDescriptor.mipCount = 0;
-                depthTexture = new RenderTexture(renderDescriptor);
+                depthTexture = new RenderTexture(depthDescriptor);
 
                 // Enable depth rendering on camera
                 trackPlayer.TrackCamera.depthTextureMode = DepthTextureMode.Depth;
 
                 // Tell camera where to store depth map
                 trackPlayer.TrackCamera.SetTargetBuffers(renderTexture.colorBuffer, depthTexture.depthBuffer);
+            }
+            else
+            {
+                // Make the camera render on to the texture instead of the screen
+                trackPlayer.TrackCamera.targetTexture = renderTexture;
             }
 
             // Setup track view to show the correct track
