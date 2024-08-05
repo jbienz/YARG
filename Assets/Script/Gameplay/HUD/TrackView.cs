@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
 using YARG.Core.Engine;
 using YARG.Core.Game;
@@ -28,6 +29,11 @@ namespace YARG.Gameplay.HUD
 
         private TrackPlayer _trackPlayer;
 
+        private Camera trackCamera;
+        private RenderTexture renderTexture;
+        private RenderTexture depthTexture;
+        private bool depth;
+
         private void Start()
         {
             _aspectRatioFitter.aspectRatio = (float) Screen.width / Screen.height;
@@ -48,18 +54,28 @@ namespace YARG.Gameplay.HUD
             // Only configure additional depth settings if using depth mode
             if (SettingsManager.Settings.TrackFadeMode.Value == TrackFadeMode.Depth)
             {
+                depth = true;
+
                 // TODO: Set shader to Depth mode
 
-                // Set the depth texture on the shader
+                // Set the depth texture on the shader to the same render texture, 
+                // since the camera is rendering color and depth to the same texture
                 newMaterial.SetTexture("_DepthTex", depthTexture);
             }
             else
             {
+                depth = false;
                 // TODO: Set shader to Screen mode
             }
 
+            trackCamera = trackPlayer.TrackCamera;
+            
+            this.renderTexture = renderTexture;
+            this.depthTexture = depthTexture;
+
             // Set the cloned material onto the RawImage
-            TrackImage.material = newMaterial;
+            //                                                     TrackImage.material = newMaterial;
+            TrackImage.material = null;
 
             // Save the player reference
             _trackPlayer = trackPlayer;
@@ -155,6 +171,16 @@ namespace YARG.Gameplay.HUD
 
             _soloBox.ForceReset();
             _textNotifications.ForceReset();
+        }
+
+        void Update()
+        {
+            if (depth)
+            {
+                Graphics.SetRenderTarget(renderTexture);
+                // trackCamera.SetTargetBuffers(renderTexture.colorBuffer, renderTexture.depthBuffer);
+                trackCamera.Render();
+            }
         }
     }
 }

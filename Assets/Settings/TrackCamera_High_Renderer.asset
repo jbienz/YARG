@@ -23,6 +23,19 @@ MonoBehaviour:
     DirectLightingStrength: 0.25
     Radius: 0.25
     SampleCount: 4
+--- !u!114 &-3297059940405918321
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03735e3d5b9d3d645a4d216251a33aae, type: 3}
+  m_Name: DepthFadeFeature
+  m_EditorClassIdentifier: 
+  m_Active: 1
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -40,9 +53,10 @@ MonoBehaviour:
       type: 3}
   m_RendererFeatures:
   - {fileID: -7153464507104564842}
-  m_RendererFeatureMap: 96e9aa74eec9b99c
+  - {fileID: -3297059940405918321}
+  m_RendererFeatureMap: 96e9aa74eec9b99c8f45efe8737d3ed2
   m_UseNativeRenderPass: 0
-  postProcessData: {fileID: 11400000, guid: c50f6c435d859b04a849541aa59e5c0e, type: 2}
+  postProcessData: {fileID: 11400000, guid: 255a24c05ea1b4049b7542a2bd881493, type: 2}
   xrSystemData: {fileID: 11400000, guid: 60e1133243b97e347b653163a8c01b64, type: 2}
   shaders:
     blitPS: {fileID: 4800000, guid: c17132b1f77d20942aa75f8429c0f8bc, type: 3}

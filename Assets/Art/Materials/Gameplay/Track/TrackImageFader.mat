@@ -7,9 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: TrackImageFade
-  m_Shader: {fileID: -6465566751694194690, guid: 8958727e063c87248bca6b7056cc6a6c,
-    type: 3}
+  m_Name: TrackImageFader
+  m_Shader: {fileID: 4800000, guid: 01391ae4eb0b8184385cf7632bfb01ee, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 4
