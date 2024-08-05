@@ -3,7 +3,7 @@ using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
 [System.Serializable]
-public class DepthFadePass : ScriptableRenderPass
+public class DistanceFadePass : ScriptableRenderPass
 {
     // Used to render from camera to post processings
     // back and forth, until we render the final image to
@@ -18,7 +18,7 @@ public class DepthFadePass : ScriptableRenderPass
 
     private Material material;
 
-    public DepthFadePass()
+    public DistanceFadePass()
     {
         // Set the render pass event
         renderPassEvent = RenderPassEvent.BeforeRenderingPostProcessing;

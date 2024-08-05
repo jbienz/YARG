@@ -1,13 +1,13 @@
 ﻿using UnityEngine.Rendering.Universal;
 
 [System.Serializable]
-public class DepthFadeFeature : ScriptableRendererFeature
+public class DistanceFadeFeature : ScriptableRendererFeature
 {
-    DepthFadePass pass;
+    DistanceFadePass pass;
 
     public override void Create()
     {
-        pass = new DepthFadePass();
+        pass = new DistanceFadePass();
     }
 
     public override void AddRenderPasses(ScriptableRenderer renderer, ref RenderingData renderingData)
