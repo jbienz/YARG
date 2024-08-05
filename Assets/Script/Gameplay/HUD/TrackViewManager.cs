@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using UnityEditor.Rendering;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.UI;
 using YARG.Gameplay.Player;
 using YARG.Helpers.Extensions;
@@ -29,38 +31,50 @@ namespace YARG.Gameplay.HUD
             // Create a track view
             var trackView = Instantiate(_trackViewPrefab, transform).GetComponent<TrackView>();
 
-            // Set up render texture
-            var renderDescriptor = new RenderTextureDescriptor(
-                Screen.width, Screen.height,
-                RenderTextureFormat.ARGBHalf);
-            renderDescriptor.mipCount = 0;
-            var renderTexture = new RenderTexture(renderDescriptor);
-
-            // Create a placeholder for the depth texture
+            // Placeholders for render textures
+            RenderTexture renderTexture = null;
             RenderTexture depthTexture = null;
 
             // Enable depth rendering only if using depth mode for track fade length
             if (SettingsManager.Settings.TrackFadeMode.Value == TrackFadeMode.Depth)
             {
-                // Set up depth texture
-                var depthDescriptor = new RenderTextureDescriptor(
-                    Screen.width, Screen.height,
-                    RenderTextureFormat.Depth,
-                    24);
-                renderDescriptor.mipCount = 0;
-                depthTexture = new RenderTexture(depthDescriptor);
-
-                // Enable depth rendering on camera
+                // Tell the camera to render depth
                 trackPlayer.TrackCamera.depthTextureMode = DepthTextureMode.Depth;
 
-                // Tell camera where to store depth map
+                // Initialize the RenderTexture with color and depth buffers
+                //renderTexture = new RenderTexture(Screen.width, Screen.height, 0, RenderTextureFormat.ARGB32); // This used to be ARGBHalf
+                //renderTexture.Create();
+
+                // Set up render texture
+                var renderDescriptor = new RenderTextureDescriptor(
+                    Screen.width, Screen.height,
+                    RenderTextureFormat.ARGBHalf);
+                renderDescriptor.mipCount = 0;
+
+                renderTexture = new RenderTexture(renderDescriptor);
+
+                depthTexture = new RenderTexture(Screen.width, Screen.height, 24, RenderTextureFormat.Depth);
+                depthTexture.Create();
+
                 trackPlayer.TrackCamera.SetTargetBuffers(renderTexture.colorBuffer, depthTexture.depthBuffer);
             }
             else
             {
+                // Disable depth rendering
+                trackPlayer.TrackCamera.depthTextureMode = DepthTextureMode.None;
+
+                // Set up render texture
+                var renderDescriptor = new RenderTextureDescriptor(
+                    Screen.width, Screen.height,
+                    RenderTextureFormat.ARGBHalf);
+                renderDescriptor.mipCount = 0;
+
+                renderTexture = new RenderTexture(renderDescriptor);
+
                 // Make the camera render on to the texture instead of the screen
                 trackPlayer.TrackCamera.targetTexture = renderTexture;
             }
+
 
             // Setup track view to show the correct track
             trackView.Initialize(renderTexture, depthTexture, player.CameraPreset, trackPlayer);

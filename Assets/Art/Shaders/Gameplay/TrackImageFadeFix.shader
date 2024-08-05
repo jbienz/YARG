@@ -3,6 +3,9 @@
     Properties
     {
         [NoScaleOffset]_MainTex("MainTex", 2D) = "white" {}
+        [NoScaleOffset]_DepthTex("DepthTex", 2D) = "white" {}
+        _CurveFactor("CurveFactor", Float) = 0
+        _FadeLength("FadeLength", Float) = 0.5
         [HideInInspector][NoScaleOffset]unity_Lightmaps("unity_Lightmaps", 2DArray) = "" {}
         [HideInInspector][NoScaleOffset]unity_LightmapsInd("unity_LightmapsInd", 2DArray) = "" {}
         [HideInInspector][NoScaleOffset]unity_ShadowMasks("unity_ShadowMasks", 2DArray) = "" {}
@@ -195,12 +198,17 @@
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
         float4 _MainTex_TexelSize;
+        float4 _DepthTex_TexelSize;
+        float _CurveFactor;
+        float _FadeLength;
         CBUFFER_END
         
         // Object and Global properties
         SAMPLER(SamplerState_Linear_Repeat);
         TEXTURE2D(_MainTex);
         SAMPLER(sampler_MainTex);
+        TEXTURE2D(_DepthTex);
+        SAMPLER(sampler_DepthTex);
         
             // Graph Includes
             // GraphIncludes: <None>
@@ -217,33 +225,7 @@
             #endif
         
             // Graph Functions
-            
-        void Unity_SampleGradientV1_float(Gradient Gradient, float Time, out float4 Out)
-        {
-            float3 color = Gradient.colors[0].rgb;
-            [unroll]
-            for (int c = 1; c < Gradient.colorsLength; c++)
-            {
-                float colorPos = saturate((Time - Gradient.colors[c - 1].w) / (Gradient.colors[c].w - Gradient.colors[c - 1].w)) * step(c, Gradient.colorsLength - 1);
-                color = lerp(color, Gradient.colors[c].rgb, lerp(colorPos, step(0.01, colorPos), Gradient.type));
-            }
-        #ifdef UNITY_COLORSPACE_GAMMA
-            color = LinearToSRGB(color);
-        #endif
-            float alpha = Gradient.alphas[0].x;
-            [unroll]
-            for (int a = 1; a < Gradient.alphasLength; a++)
-            {
-                float alphaPos = saturate((Time - Gradient.alphas[a - 1].y) / (Gradient.alphas[a].y - Gradient.alphas[a - 1].y)) * step(a, Gradient.alphasLength - 1);
-                alpha = lerp(alpha, Gradient.alphas[a].x, lerp(alphaPos, step(0.01, alphaPos), Gradient.type));
-            }
-            Out = float4(color, alpha);
-        }
-        
-        void Unity_Multiply_float4_float4(float4 A, float4 B, out float4 Out)
-        {
-            Out = A * B;
-        }
+            // GraphFunctions: <None>
         
             /* WARNING: $splice Could not find named fragment 'CustomInterpolatorPreVertex' */
         
@@ -282,24 +264,14 @@
         SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
         {
             SurfaceDescription surface = (SurfaceDescription)0;
-            UnityTexture2D _Property_996b493d54924690a79e7fb166b273f3_Out_0 = UnityBuildTexture2DStructNoScale(_MainTex);
-            float4 _SampleTexture2D_835ed79cb6b845b2ac816dada67bdee0_RGBA_0 = SAMPLE_TEXTURE2D(_Property_996b493d54924690a79e7fb166b273f3_Out_0.tex, _Property_996b493d54924690a79e7fb166b273f3_Out_0.samplerstate, _Property_996b493d54924690a79e7fb166b273f3_Out_0.GetTransformedUV(IN.uv0.xy));
-            float _SampleTexture2D_835ed79cb6b845b2ac816dada67bdee0_R_4 = _SampleTexture2D_835ed79cb6b845b2ac816dada67bdee0_RGBA_0.r;
-            float _SampleTexture2D_835ed79cb6b845b2ac816dada67bdee0_G_5 = _SampleTexture2D_835ed79cb6b845b2ac816dada67bdee0_RGBA_0.g;
-            float _SampleTexture2D_835ed79cb6b845b2ac816dada67bdee0_B_6 = _SampleTexture2D_835ed79cb6b845b2ac816dada67bdee0_RGBA_0.b;
-            float _SampleTexture2D_835ed79cb6b845b2ac816dada67bdee0_A_7 = _SampleTexture2D_835ed79cb6b845b2ac816dada67bdee0_RGBA_0.a;
-            Gradient _Gradient_356a591976c345afb2d7e0012534a4ca_Out_0 = NewGradient(0, 2, 2, float4(1, 1, 1, 0.4843214),float4(0, 0, 0, 0.5686275),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0), float2(1, 0),float2(1, 1),float2(0, 0),float2(0, 0),float2(0, 0),float2(0, 0),float2(0, 0),float2(0, 0));
-            float4 _UV_e4209ec02ae046e49db5b0d6c81ca682_Out_0 = IN.uv0;
-            float _Split_9a63790d6549413c8eef7fb516cbfed5_R_1 = _UV_e4209ec02ae046e49db5b0d6c81ca682_Out_0[0];
-            float _Split_9a63790d6549413c8eef7fb516cbfed5_G_2 = _UV_e4209ec02ae046e49db5b0d6c81ca682_Out_0[1];
-            float _Split_9a63790d6549413c8eef7fb516cbfed5_B_3 = _UV_e4209ec02ae046e49db5b0d6c81ca682_Out_0[2];
-            float _Split_9a63790d6549413c8eef7fb516cbfed5_A_4 = _UV_e4209ec02ae046e49db5b0d6c81ca682_Out_0[3];
-            float4 _SampleGradient_5a09f3ded78e454b8727149a1dd493f7_Out_2;
-            Unity_SampleGradientV1_float(_Gradient_356a591976c345afb2d7e0012534a4ca_Out_0, _Split_9a63790d6549413c8eef7fb516cbfed5_G_2, _SampleGradient_5a09f3ded78e454b8727149a1dd493f7_Out_2);
-            float4 _Multiply_e02b6ea501c24ce09d9fa13484931aba_Out_2;
-            Unity_Multiply_float4_float4((_SampleTexture2D_835ed79cb6b845b2ac816dada67bdee0_A_7.xxxx), _SampleGradient_5a09f3ded78e454b8727149a1dd493f7_Out_2, _Multiply_e02b6ea501c24ce09d9fa13484931aba_Out_2);
-            surface.BaseColor = (_SampleTexture2D_835ed79cb6b845b2ac816dada67bdee0_RGBA_0.xyz);
-            surface.Alpha = (_Multiply_e02b6ea501c24ce09d9fa13484931aba_Out_2).x;
+            UnityTexture2D _Property_14ca91a32fbb4b2883ae8b45f7b2f5a1_Out_0 = UnityBuildTexture2DStructNoScale(_DepthTex);
+            float4 _SampleTexture2D_fe25d44ba12349e7b4f0de2e8b1018eb_RGBA_0 = SAMPLE_TEXTURE2D(_Property_14ca91a32fbb4b2883ae8b45f7b2f5a1_Out_0.tex, _Property_14ca91a32fbb4b2883ae8b45f7b2f5a1_Out_0.samplerstate, _Property_14ca91a32fbb4b2883ae8b45f7b2f5a1_Out_0.GetTransformedUV(IN.uv0.xy));
+            float _SampleTexture2D_fe25d44ba12349e7b4f0de2e8b1018eb_R_4 = _SampleTexture2D_fe25d44ba12349e7b4f0de2e8b1018eb_RGBA_0.r;
+            float _SampleTexture2D_fe25d44ba12349e7b4f0de2e8b1018eb_G_5 = _SampleTexture2D_fe25d44ba12349e7b4f0de2e8b1018eb_RGBA_0.g;
+            float _SampleTexture2D_fe25d44ba12349e7b4f0de2e8b1018eb_B_6 = _SampleTexture2D_fe25d44ba12349e7b4f0de2e8b1018eb_RGBA_0.b;
+            float _SampleTexture2D_fe25d44ba12349e7b4f0de2e8b1018eb_A_7 = _SampleTexture2D_fe25d44ba12349e7b4f0de2e8b1018eb_RGBA_0.a;
+            surface.BaseColor = (_SampleTexture2D_fe25d44ba12349e7b4f0de2e8b1018eb_RGBA_0.xyz);
+            surface.Alpha = _SampleTexture2D_fe25d44ba12349e7b4f0de2e8b1018eb_A_7;
             return surface;
         }
         
@@ -524,12 +496,17 @@
             // Graph Properties
             CBUFFER_START(UnityPerMaterial)
         float4 _MainTex_TexelSize;
+        float4 _DepthTex_TexelSize;
+        float _CurveFactor;
+        float _FadeLength;
         CBUFFER_END
         
         // Object and Global properties
         SAMPLER(SamplerState_Linear_Repeat);
         TEXTURE2D(_MainTex);
         SAMPLER(sampler_MainTex);
+        TEXTURE2D(_DepthTex);
+        SAMPLER(sampler_DepthTex);
         
             // Graph Includes
             // GraphIncludes: <None>
@@ -546,33 +523,7 @@
             #endif
         
             // Graph Functions
-            
-        void Unity_SampleGradientV1_float(Gradient Gradient, float Time, out float4 Out)
-        {
-            float3 color = Gradient.colors[0].rgb;
-            [unroll]
-            for (int c = 1; c < Gradient.colorsLength; c++)
-            {
-                float colorPos = saturate((Time - Gradient.colors[c - 1].w) / (Gradient.colors[c].w - Gradient.colors[c - 1].w)) * step(c, Gradient.colorsLength - 1);
-                color = lerp(color, Gradient.colors[c].rgb, lerp(colorPos, step(0.01, colorPos), Gradient.type));
-            }
-        #ifdef UNITY_COLORSPACE_GAMMA
-            color = LinearToSRGB(color);
-        #endif
-            float alpha = Gradient.alphas[0].x;
-            [unroll]
-            for (int a = 1; a < Gradient.alphasLength; a++)
-            {
-                float alphaPos = saturate((Time - Gradient.alphas[a - 1].y) / (Gradient.alphas[a].y - Gradient.alphas[a - 1].y)) * step(a, Gradient.alphasLength - 1);
-                alpha = lerp(alpha, Gradient.alphas[a].x, lerp(alphaPos, step(0.01, alphaPos), Gradient.type));
-            }
-            Out = float4(color, alpha);
-        }
-        
-        void Unity_Multiply_float4_float4(float4 A, float4 B, out float4 Out)
-        {
-            Out = A * B;
-        }
+            // GraphFunctions: <None>
         
             /* WARNING: $splice Could not find named fragment 'CustomInterpolatorPreVertex' */
         
@@ -611,24 +562,14 @@
         SurfaceDescription SurfaceDescriptionFunction(SurfaceDescriptionInputs IN)
         {
             SurfaceDescription surface = (SurfaceDescription)0;
-            UnityTexture2D _Property_996b493d54924690a79e7fb166b273f3_Out_0 = UnityBuildTexture2DStructNoScale(_MainTex);
-            float4 _SampleTexture2D_835ed79cb6b845b2ac816dada67bdee0_RGBA_0 = SAMPLE_TEXTURE2D(_Property_996b493d54924690a79e7fb166b273f3_Out_0.tex, _Property_996b493d54924690a79e7fb166b273f3_Out_0.samplerstate, _Property_996b493d54924690a79e7fb166b273f3_Out_0.GetTransformedUV(IN.uv0.xy));
-            float _SampleTexture2D_835ed79cb6b845b2ac816dada67bdee0_R_4 = _SampleTexture2D_835ed79cb6b845b2ac816dada67bdee0_RGBA_0.r;
-            float _SampleTexture2D_835ed79cb6b845b2ac816dada67bdee0_G_5 = _SampleTexture2D_835ed79cb6b845b2ac816dada67bdee0_RGBA_0.g;
-            float _SampleTexture2D_835ed79cb6b845b2ac816dada67bdee0_B_6 = _SampleTexture2D_835ed79cb6b845b2ac816dada67bdee0_RGBA_0.b;
-            float _SampleTexture2D_835ed79cb6b845b2ac816dada67bdee0_A_7 = _SampleTexture2D_835ed79cb6b845b2ac816dada67bdee0_RGBA_0.a;
-            Gradient _Gradient_356a591976c345afb2d7e0012534a4ca_Out_0 = NewGradient(0, 2, 2, float4(1, 1, 1, 0.4843214),float4(0, 0, 0, 0.5686275),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0),float4(0, 0, 0, 0), float2(1, 0),float2(1, 1),float2(0, 0),float2(0, 0),float2(0, 0),float2(0, 0),float2(0, 0),float2(0, 0));
-            float4 _UV_e4209ec02ae046e49db5b0d6c81ca682_Out_0 = IN.uv0;
-            float _Split_9a63790d6549413c8eef7fb516cbfed5_R_1 = _UV_e4209ec02ae046e49db5b0d6c81ca682_Out_0[0];
-            float _Split_9a63790d6549413c8eef7fb516cbfed5_G_2 = _UV_e4209ec02ae046e49db5b0d6c81ca682_Out_0[1];
-            float _Split_9a63790d6549413c8eef7fb516cbfed5_B_3 = _UV_e4209ec02ae046e49db5b0d6c81ca682_Out_0[2];
-            float _Split_9a63790d6549413c8eef7fb516cbfed5_A_4 = _UV_e4209ec02ae046e49db5b0d6c81ca682_Out_0[3];
-            float4 _SampleGradient_5a09f3ded78e454b8727149a1dd493f7_Out_2;
-            Unity_SampleGradientV1_float(_Gradient_356a591976c345afb2d7e0012534a4ca_Out_0, _Split_9a63790d6549413c8eef7fb516cbfed5_G_2, _SampleGradient_5a09f3ded78e454b8727149a1dd493f7_Out_2);
-            float4 _Multiply_e02b6ea501c24ce09d9fa13484931aba_Out_2;
-            Unity_Multiply_float4_float4((_SampleTexture2D_835ed79cb6b845b2ac816dada67bdee0_A_7.xxxx), _SampleGradient_5a09f3ded78e454b8727149a1dd493f7_Out_2, _Multiply_e02b6ea501c24ce09d9fa13484931aba_Out_2);
-            surface.BaseColor = (_SampleTexture2D_835ed79cb6b845b2ac816dada67bdee0_RGBA_0.xyz);
-            surface.Alpha = (_Multiply_e02b6ea501c24ce09d9fa13484931aba_Out_2).x;
+            UnityTexture2D _Property_14ca91a32fbb4b2883ae8b45f7b2f5a1_Out_0 = UnityBuildTexture2DStructNoScale(_DepthTex);
+            float4 _SampleTexture2D_fe25d44ba12349e7b4f0de2e8b1018eb_RGBA_0 = SAMPLE_TEXTURE2D(_Property_14ca91a32fbb4b2883ae8b45f7b2f5a1_Out_0.tex, _Property_14ca91a32fbb4b2883ae8b45f7b2f5a1_Out_0.samplerstate, _Property_14ca91a32fbb4b2883ae8b45f7b2f5a1_Out_0.GetTransformedUV(IN.uv0.xy));
+            float _SampleTexture2D_fe25d44ba12349e7b4f0de2e8b1018eb_R_4 = _SampleTexture2D_fe25d44ba12349e7b4f0de2e8b1018eb_RGBA_0.r;
+            float _SampleTexture2D_fe25d44ba12349e7b4f0de2e8b1018eb_G_5 = _SampleTexture2D_fe25d44ba12349e7b4f0de2e8b1018eb_RGBA_0.g;
+            float _SampleTexture2D_fe25d44ba12349e7b4f0de2e8b1018eb_B_6 = _SampleTexture2D_fe25d44ba12349e7b4f0de2e8b1018eb_RGBA_0.b;
+            float _SampleTexture2D_fe25d44ba12349e7b4f0de2e8b1018eb_A_7 = _SampleTexture2D_fe25d44ba12349e7b4f0de2e8b1018eb_RGBA_0.a;
+            surface.BaseColor = (_SampleTexture2D_fe25d44ba12349e7b4f0de2e8b1018eb_RGBA_0.xyz);
+            surface.Alpha = _SampleTexture2D_fe25d44ba12349e7b4f0de2e8b1018eb_A_7;
             return surface;
         }
         
