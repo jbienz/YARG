@@ -39,7 +39,7 @@ namespace YARG.Gameplay.HUD
             _aspectRatioFitter.aspectRatio = (float) Screen.width / Screen.height;
         }
 
-        public void Initialize(RenderTexture renderTexture, RenderTexture depthTexture, CameraPreset cameraPreset, TrackPlayer trackPlayer)
+        public void Initialize(RenderTexture renderTexture, CameraPreset cameraPreset, TrackPlayer trackPlayer)
         {
             // Store the render texture as the RawImage main texture
             TrackImage.texture = renderTexture;
@@ -51,6 +51,7 @@ namespace YARG.Gameplay.HUD
             newMaterial.SetFloat(_curveFactor, cameraPreset.CurveFactor);
             newMaterial.SetFloat(_fadeLength, cameraPreset.FadeLength);
 
+            /*
             // Only configure additional depth settings if using depth mode
             if (SettingsManager.Settings.TrackFadeMode.Value == TrackFadeMode.Depth)
             {
@@ -67,6 +68,7 @@ namespace YARG.Gameplay.HUD
                 depth = false;
                 // TODO: Set shader to Screen mode
             }
+            */
 
             trackCamera = trackPlayer.TrackCamera;
             
