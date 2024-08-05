@@ -73,7 +73,7 @@ namespace YARG.Gameplay.HUD
             trackCamera = trackPlayer.TrackCamera;
             
             this.renderTexture = renderTexture;
-            this.depthTexture = depthTexture;
+            this.depthTexture = renderTexture;
 
             // Set the cloned material onto the RawImage
             //                                                     TrackImage.material = newMaterial;
