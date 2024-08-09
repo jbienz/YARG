@@ -19,7 +19,7 @@
 			
             TEXTURE2D(_MainTex);
             SAMPLER(sampler_MainTex);
-            
+
 			float _Intensity;
             float4 _OverlayColor;
             
@@ -52,8 +52,8 @@
             float4 frag (Varyings input) : SV_Target 
             {
                 // Color Mode WITHOUT Overlay
-				float4 color = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, input.uv);
-				return color;
+				// float4 color = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, input.uv);
+				// return color;
 
 
                 // Color Mode WITH Overlay
@@ -61,11 +61,13 @@
 				// return lerp(color, _OverlayColor, _Intensity);
 
                 // Depth Direct
-                // float depth = SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, sampler_CameraDepthTexture, input.screenPos.xy);
-                // float depth = SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, sampler_CameraDepthTexture, input.uv.xy);
+                // float depth = SAMPLE_DEPTH_TEXTURE(_DepthTex, sampler_DepthTex, input.screenPos.xy);
+                // float depth = SAMPLE_DEPTH_TEXTURE(_DepthTex, sampler_DepthTex, input.uv.xy);
+                // float depth = LinearEyeDepth(SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, sampler_CameraDepthTexture, UnityStereoTransformScreenSpaceTex(input.uv)), _ZBufferParams);
+                float depth = SampleSceneDepth(input.uv);
                 // return float4(depth, 0, 0, 1);
-                // float grayscale = Linear01Depth(depth);
-                // return float4(grayscale, grayscale, grayscale, 1);
+                float grayscale = Linear01Depth(depth, _ZBufferParams);
+                return float4(grayscale, grayscale, grayscale, 1);
 
                 // // Sample the depth value
                 // float depth = SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, sampler_CameraDepthTexture, input.screenPos.xy).r;

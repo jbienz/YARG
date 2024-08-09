@@ -195,6 +195,10 @@ namespace YARG.Gameplay
 
         private void Update()
         {
+            // Do nothing if no time has passed
+            // This deals with frame debugger not being fully paused in Unity 2021.3.
+            if (Time.deltaTime == 0) return;
+
             // Pause/unpause
             if (Keyboard.current.escapeKey.wasPressedThisFrame)
             {
