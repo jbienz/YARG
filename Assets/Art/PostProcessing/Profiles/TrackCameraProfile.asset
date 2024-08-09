@@ -52,10 +52,18 @@ MonoBehaviour:
   m_Name: DistanceFadeComponent
   m_EditorClassIdentifier: 
   active: 1
-  intensity:
+  nearClip:
     m_OverrideState: 1
-    m_Value: 1
-  overlayColor:
+    m_Value: 0.083
+  farClip:
     m_OverrideState: 1
-    m_Value: {r: 0, g: 1, b: 1, a: 1}
-    hdr: 0
+    m_Value: 0.075
+  nearFade:
+    m_OverrideState: 1
+    m_Value: 0.01
+  farFade:
+    m_OverrideState: 1
+    m_Value: 0.104
+  previewMask:
+    m_OverrideState: 0
+    m_Value: 0

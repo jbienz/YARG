@@ -7,9 +7,10 @@ using UnityEngine.Rendering.Universal;
 public class DistanceFadePass : ScriptableRenderPass
 {
     #region Constants
-    private readonly int PROP_DEPTH_TEXTURE_ID = Shader.PropertyToID("_DepthTex");
-    private readonly int PROP_INTENSITY_ID = Shader.PropertyToID("_Intensity");
-    private readonly int PROP_OVERLAY_COLOR_ID = Shader.PropertyToID("_OverlayColor");
+    private readonly int PROP_NEAR_CLIP_ID = Shader.PropertyToID("_NearClip");
+    private readonly int PROP_FAR_CLIP_ID = Shader.PropertyToID("_FarClip");
+    private readonly int PROP_NEAR_FADE_ID = Shader.PropertyToID("_NearFade");
+    private readonly int PROP_FAR_FADE_ID = Shader.PropertyToID("_FarFade");
     private readonly int PROP_TEMP_COLOR_ID = Shader.PropertyToID("_TempColor");
     #endregion Constants
 
@@ -47,15 +48,17 @@ public class DistanceFadePass : ScriptableRenderPass
     private void ExecuteDistanceFade(CommandBuffer cmd)
     {
         // Update shader properties
-        m_distanceFadeMaterial.SetFloat(PROP_INTENSITY_ID, m_distanceFadeComponent.intensity.value);
-        m_distanceFadeMaterial.SetColor(PROP_OVERLAY_COLOR_ID, m_distanceFadeComponent.overlayColor.value);
+        m_distanceFadeMaterial.SetFloat(PROP_NEAR_CLIP_ID, m_distanceFadeComponent.nearClip.value);
+        m_distanceFadeMaterial.SetFloat(PROP_FAR_CLIP_ID, m_distanceFadeComponent.farClip.value);
+        m_distanceFadeMaterial.SetFloat(PROP_NEAR_FADE_ID, m_distanceFadeComponent.nearFade.value);
+        m_distanceFadeMaterial.SetFloat(PROP_FAR_FADE_ID, m_distanceFadeComponent.farFade.value);
 
         // Create temp color buffer
         cmd.GetTemporaryRT(PROP_TEMP_COLOR_ID, m_cameraDescriptor);
         m_shaderTempColor = new RenderTargetIdentifier(PROP_TEMP_COLOR_ID);
 
         // Use camera depth buffer for shader depth texture
-        cmd.SetGlobalTexture(PROP_DEPTH_TEXTURE_ID, m_cameraDepth);
+        // cmd.SetGlobalTexture(PROP_DEPTH_TEXTURE_ID, m_cameraDepth);
         // m_distanceFadeMaterial.SetTexture(PROP_DEPTH_TEXTURE_ID, Shader.GetGlobalTexture("_MYDEPTH"));
 
         // Run the first pass of the shader
@@ -119,7 +122,6 @@ public class DistanceFadePass : ScriptableRenderPass
     /// <inheritdoc />
     public override void OnCameraCleanup(CommandBuffer cmd)
     {
-        cmd.ReleaseTemporaryRT(PROP_DEPTH_TEXTURE_ID);
         cmd.ReleaseTemporaryRT(PROP_TEMP_COLOR_ID);
     }
 
