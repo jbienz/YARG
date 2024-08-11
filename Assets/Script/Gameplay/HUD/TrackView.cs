@@ -31,7 +31,6 @@ namespace YARG.Gameplay.HUD
 
         private Camera trackCamera;
         private RenderTexture renderTexture;
-        private RenderTexture depthTexture;
         private bool depth;
 
         private void Start()
@@ -50,34 +49,12 @@ namespace YARG.Gameplay.HUD
             // Configure the cloned material
             newMaterial.SetFloat(_curveFactor, cameraPreset.CurveFactor);
             newMaterial.SetFloat(_fadeLength, cameraPreset.FadeLength);
-
-            /*
-            // Only configure additional depth settings if using depth mode
-            if (SettingsManager.Settings.TrackFadeMode.Value == TrackFadeMode.Depth)
-            {
-                depth = true;
-
-                // TODO: Set shader to Depth mode
-
-                // Set the depth texture on the shader to the same render texture, 
-                // since the camera is rendering color and depth to the same texture
-                newMaterial.SetTexture("_DepthTex", depthTexture);
-            }
-            else
-            {
-                depth = false;
-                // TODO: Set shader to Screen mode
-            }
-            */
-
             trackCamera = trackPlayer.TrackCamera;
             
             this.renderTexture = renderTexture;
-            this.depthTexture = renderTexture;
 
             // Set the cloned material onto the RawImage
-            //                                                     TrackImage.material = newMaterial;
-            TrackImage.material = null;
+            TrackImage.material = newMaterial;
 
             // Save the player reference
             _trackPlayer = trackPlayer;
