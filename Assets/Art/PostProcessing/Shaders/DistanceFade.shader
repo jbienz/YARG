@@ -97,7 +97,7 @@
                 lin = 1.0 - lin;
 
                 // Are we previewing mask or doing alpha?
-                if (_PreviewMask > 0)
+                if (_PreviewMask == 1.0f)
                 {
                     // Return grayscale color value
                     return float4(lin, lin, lin, 1);

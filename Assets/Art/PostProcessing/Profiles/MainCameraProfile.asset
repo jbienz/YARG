@@ -41,26 +41,6 @@ MonoBehaviour:
   dirtIntensity:
     m_OverrideState: 0
     m_Value: 0
---- !u!114 &-7708632388539586902
-MonoBehaviour:
-  m_ObjectHideFlags: 3
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 24a4d12b3920584459041d47824872c2, type: 3}
-  m_Name: DistanceFadeComponent
-  m_EditorClassIdentifier: 
-  active: 1
-  intensity:
-    m_OverrideState: 0
-    m_Value: 1
-  overlayColor:
-    m_OverrideState: 0
-    m_Value: {r: 0, g: 1, b: 1, a: 1}
-    hdr: 0
 --- !u!114 &-5397027753433648866
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -96,13 +76,12 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d7fd9488000d3734a9e00ee676215985, type: 3}
-  m_Name: PostProcessProfile
+  m_Name: MainCameraProfile
   m_EditorClassIdentifier: 
   components:
   - {fileID: 849379129802519247}
   - {fileID: -7893295128165547882}
   - {fileID: -5397027753433648866}
-  - {fileID: -7708632388539586902}
 --- !u!114 &849379129802519247
 MonoBehaviour:
   m_ObjectHideFlags: 3

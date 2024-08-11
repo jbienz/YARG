@@ -40,9 +40,6 @@ public class DistanceFadeFeature : ScriptableRendererFeature
         m_distanceFadePass.ConfigureInput(ScriptableRenderPassInput.Depth);
         renderingData.cameraData.requiresDepthTexture = true;
 
-        // Connect color and depth to the renderer
-        //m_distanceFadePass.SetTargets(renderer.cameraColorTarget, renderer.cameraDepthTarget);
-
         // Add our custom passes
         renderer.EnqueuePass(m_distanceFadePass);
     }

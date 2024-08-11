@@ -11,6 +11,7 @@ public class DistanceFadePass : ScriptableRenderPass
     private readonly int PROP_FAR_CLIP_ID = Shader.PropertyToID("_FarClip");
     private readonly int PROP_NEAR_FADE_ID = Shader.PropertyToID("_NearFade");
     private readonly int PROP_FAR_FADE_ID = Shader.PropertyToID("_FarFade");
+    private readonly int PROP_PREVIEW_MASK_ID = Shader.PropertyToID("_PreviewMask");
     private readonly int PROP_TEMP_COLOR_ID = Shader.PropertyToID("_TempColor");
     #endregion Constants
 
@@ -51,21 +52,22 @@ public class DistanceFadePass : ScriptableRenderPass
         m_distanceFadeMaterial.SetFloat(PROP_NEAR_CLIP_ID, m_distanceFadeComponent.nearClip.value);
         m_distanceFadeMaterial.SetFloat(PROP_FAR_CLIP_ID, m_distanceFadeComponent.farClip.value);
         m_distanceFadeMaterial.SetFloat(PROP_NEAR_FADE_ID, m_distanceFadeComponent.nearFade.value);
+        m_distanceFadeMaterial.SetFloat(PROP_PREVIEW_MASK_ID, (m_distanceFadeComponent.previewMask.value ? 1.0f : 0.0f));
         m_distanceFadeMaterial.SetFloat(PROP_FAR_FADE_ID, m_distanceFadeComponent.farFade.value);
 
         // Create temp color buffer
         cmd.GetTemporaryRT(PROP_TEMP_COLOR_ID, m_cameraDescriptor);
         m_shaderTempColor = new RenderTargetIdentifier(PROP_TEMP_COLOR_ID);
 
-        // Use camera depth buffer for shader depth texture
-        // cmd.SetGlobalTexture(PROP_DEPTH_TEXTURE_ID, m_cameraDepth);
-        // m_distanceFadeMaterial.SetTexture(PROP_DEPTH_TEXTURE_ID, Shader.GetGlobalTexture("_MYDEPTH"));
-
         // Run the first pass of the shader
         Blit(cmd, m_cameraColor, m_shaderTempColor, m_distanceFadeMaterial, 0);
-        // Blit(cmd, temporaryBuffer, colorBuffer, mat, 1); // shader pass 1
 
-        // Copy output back to camera !!! IMPORTANT: COULD BE DONE IN ONE STEP ABOVE
+        // Copy output back to camera.
+        //
+        // TODO: Could this be done in the same step above?
+        // I don't think you can write to a texture you're also reading from.
+        // E.g. I don't think you can write to a buffer that currently has a
+        // SAMPLER2D attached.
         Blit(cmd, m_shaderTempColor, m_cameraColor);
     }
 
@@ -134,35 +136,7 @@ public class DistanceFadePass : ScriptableRenderPass
         // Hold onto the camera target as the main "source"
         m_cameraColor = renderingData.cameraData.renderer.cameraColorTarget;
         m_cameraDepth = renderingData.cameraData.renderer.cameraDepthTarget;
-
-        /*
-        descriptor.depthBufferBits = 0;
-
-        var renderer = renderingData.cameraData.renderer;
-        source = renderer.cameraColorTarget;
-
-        // Create a temporary render texture using the descriptor from above.
-        cmd.GetTemporaryRT(temporaryRTIdA, descriptor, FilterMode.Bilinear);
-        destinationA = new RenderTargetIdentifier(temporaryRTIdA);
-        cmd.GetTemporaryRT(temporaryRTIdB, descriptor, FilterMode.Bilinear);
-        destinationB = new RenderTargetIdentifier(temporaryRTIdB);
-        */
     }
-
-    ///// <summary>
-    ///// Sets the render targets for the camera.
-    ///// </summary>
-    ///// <param name="cameraColorTargetHandle">
-    ///// The color target.
-    ///// </param>
-    ///// <param name="cameraDepthTargetHandle">
-    ///// The depth target.
-    ///// </param>
-    //public void SetTargets(RenderTargetIdentifier cameraColorTargetHandle, RenderTargetIdentifier cameraDepthTargetHandle)
-    //{
-    //    m_cameraColorTargetHandle = cameraColorTargetHandle;
-    //    m_cameraDepthTargetHandle = cameraDepthTargetHandle;
-    //}
 
     #endregion Public Methods
 }

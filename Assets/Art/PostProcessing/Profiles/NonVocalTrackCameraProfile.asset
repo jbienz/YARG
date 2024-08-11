@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d7fd9488000d3734a9e00ee676215985, type: 3}
-  m_Name: TrackCameraProfile
+  m_Name: NonVocalTrackCameraProfile
   m_EditorClassIdentifier: 
   components:
   - {fileID: 4878460727757187236}
@@ -54,16 +54,16 @@ MonoBehaviour:
   active: 1
   nearClip:
     m_OverrideState: 1
-    m_Value: 0.083
+    m_Value: 0.06
   farClip:
     m_OverrideState: 1
-    m_Value: 0.075
+    m_Value: 0.101
   nearFade:
     m_OverrideState: 1
-    m_Value: 0.01
+    m_Value: 0
   farFade:
     m_OverrideState: 1
-    m_Value: 0.104
+    m_Value: 0.057
   previewMask:
-    m_OverrideState: 0
-    m_Value: 0
+    m_OverrideState: 1
+    m_Value: 1
