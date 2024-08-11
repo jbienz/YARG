@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Linq;
+using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
 using YARG.Core.Engine;
@@ -48,13 +50,34 @@ namespace YARG.Gameplay.HUD
 
             // Configure the cloned material
             newMaterial.SetFloat(_curveFactor, cameraPreset.CurveFactor);
-            newMaterial.SetFloat(_fadeLength, cameraPreset.FadeLength);
             trackCamera = trackPlayer.TrackCamera;
             
             this.renderTexture = renderTexture;
 
             // Set the cloned material onto the RawImage
             TrackImage.material = newMaterial;
+
+            // Get the post-processing volume applied to the camera
+            var volume = trackCamera.GetComponent<Volume>();
+
+            // Clone the profile that comes in from the prefab.
+            // This makes it so we can change effects per camera.
+            VolumeProfile clonedProfile = Instantiate(volume.profile);
+
+            // Get the DistanceFade component
+            DistanceFadeComponent fadeComponent = (DistanceFadeComponent)clonedProfile.components.First(c => c is DistanceFadeComponent);
+
+            // Set the fade to match the camera profile
+            fadeComponent.farClip.Override(cameraPreset.FadeLength);
+
+            // If we're not at infinite distance, also fade out
+            if (cameraPreset.FadeLength < 1.0)
+            {
+                fadeComponent.farFade.Override(0.02f);
+            }
+
+            // Set the cloned profile onto the volume
+            volume.profile = clonedProfile;
 
             // Save the player reference
             _trackPlayer = trackPlayer;

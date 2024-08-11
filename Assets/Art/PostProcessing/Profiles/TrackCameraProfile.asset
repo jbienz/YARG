@@ -51,19 +51,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 24a4d12b3920584459041d47824872c2, type: 3}
   m_Name: DistanceFadeComponent
   m_EditorClassIdentifier: 
-  active: 0
+  active: 1
   nearClip:
-    m_OverrideState: 1
-    m_Value: 0
+    m_OverrideState: 0
+    m_Value: 0.028
   farClip:
-    m_OverrideState: 1
-    m_Value: 0.182
+    m_OverrideState: 0
+    m_Value: 0.205
   nearFade:
-    m_OverrideState: 1
+    m_OverrideState: 0
     m_Value: 0
   farFade:
-    m_OverrideState: 1
-    m_Value: 0.052
+    m_OverrideState: 0
+    m_Value: 0.022
   previewMask:
-    m_OverrideState: 1
+    m_OverrideState: 0
     m_Value: 0
