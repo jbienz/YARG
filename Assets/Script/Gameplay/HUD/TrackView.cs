@@ -67,6 +67,10 @@ namespace YARG.Gameplay.HUD
             // Get the DistanceFade component
             DistanceFadeComponent fadeComponent = (DistanceFadeComponent)clonedProfile.components.First(c => c is DistanceFadeComponent);
 
+            // JARED: TODO: The FadeLength in the current system appears to be meters from the camera.
+            // However, the new 0 - 1 range appears to be Camera Near Clipping Plane to Far Clipping Plane.
+            // We'll need to convert this to depth buffer distance.
+
             // Set the fade to match the camera profile
             fadeComponent.farClip.Override(cameraPreset.FadeLength);
 
