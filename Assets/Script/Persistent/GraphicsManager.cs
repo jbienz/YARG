@@ -12,12 +12,6 @@ namespace YARG
         Off
     }
 
-    public enum TrackFadeMode
-    {
-        Depth,
-        Screen
-    }
-
     public class GraphicsManager : MonoSingleton<GraphicsManager>
     {
         [SerializeField]

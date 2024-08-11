@@ -201,13 +201,6 @@ namespace YARG.Settings
                     StarPowerHighwayFxMode.Off
                 };
 
-            public DropdownSetting<YARG.TrackFadeMode> TrackFadeMode { get; }
-                = new(YARG.TrackFadeMode.Depth)
-                {
-                    YARG.TrackFadeMode.Depth,
-                    YARG.TrackFadeMode.Screen
-                };
-
             public ToggleSetting ShowHitWindow { get; } = new(false, ShowHitWindowCallback);
             public ToggleSetting DisableTextNotifications { get; } = new(false);
             public ToggleSetting EnablePracticeSP { get; } = new(false);
